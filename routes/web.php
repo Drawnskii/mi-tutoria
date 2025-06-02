@@ -21,11 +21,6 @@ Route::get('/dashboard', function () {
 ->middleware(['auth', 'verified'])
 ->name('dashboard');
 
-Route::view('student', 'student-dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('student')
-    ->middleware(RedirectBasedOnRole::class);
-
 Route::view('tutor', 'tutor-dashboard')
     ->middleware(['auth', 'verified'])
     ->name('tutor')

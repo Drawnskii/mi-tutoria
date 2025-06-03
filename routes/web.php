@@ -5,8 +5,10 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 use App\Http\Middleware\RedirectBasedOnRole;
+use App\Http\Controllers\ScheduleController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -14,33 +16,35 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     $user = Auth::user();
-    $role = $user->role->name; 
+    $role = $user->role->name;
 
-    return redirect()->route($role);
-})
-->middleware(['auth', 'verified'])
-->name('dashboard');
+    if ($role === 'student') {
+        return redirect('/student'); // Panel Filament estudiantes
+    }
 
-Route::view('student', 'student-dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('student')
-    ->middleware(RedirectBasedOnRole::class);
+    if ($role === 'coordinator') {
+        return redirect('/coordinator'); // Panel Filament coordinador
+    }
 
-use App\Http\Controllers\ScheduleController;
+    // Opcional: para otros roles o default, redirigir a home o logout
+    return redirect('/home');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+
+// Eliminada la ruta manual de 'student' que apuntaba a una vista.
+// El panel de Filament debe manejar /student con sus propios middleware.
 
 // Ruta principal del panel del tutor
 Route::view('tutor', 'tutor-dashboard')
     ->middleware(['auth', 'verified', RedirectBasedOnRole::class])
     ->name('tutor');
 
-// Agrupar rutas bajo autenticación y verificación
+// Agrupar rutas bajo autenticación y verificación para tutor schedules
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // CRUD de horarios para el tutor autenticado
     Route::prefix('tutor/schedules')->name('tutor.schedules.')->group(function () {
         Route::get('/', [ScheduleController::class, 'index'])->name('index');
         Route::get('/edit/{schedule}', [ScheduleController::class, 'edit'])->name('edit');
-        // Ruta para ver todas las solicitudes de un schedule específico
         Route::get('requests/{schedule}', function (\App\Models\Schedule $schedule) {
             return view('tutor.requests.index', compact('schedule'));
         })->name('requests');
@@ -51,10 +55,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-Route::view('coordinator', 'coordinator-dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('coordinator')
-    ->middleware(RedirectBasedOnRole::class);
     
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');

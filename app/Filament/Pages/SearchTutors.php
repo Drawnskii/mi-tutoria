@@ -16,7 +16,7 @@ class SearchTutors extends Page implements Forms\Contracts\HasForms
 {
     use Forms\Concerns\InteractsWithForms;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard';
     protected static ?string $title = 'Solicitud';
     protected static string $view = 'filament.pages.search-tutors';
 

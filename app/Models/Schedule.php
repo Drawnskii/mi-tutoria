@@ -49,7 +49,7 @@ class Schedule extends Model
 
 	public function tutor()
 	{
-		return $this->belongsTo(Tutor::class);
+		return $this->belongsTo(Tutor::class, 'tutor_id', 'user_id');
 	}
 
 	public function requests()

@@ -26,8 +26,12 @@ Route::get('/dashboard', function () {
         return redirect('/coordinator'); // Panel Filament coordinador
     }
 
+    if ($role === 'tutor') {
+        return redirect('/tutor/schedules'); // Panel Filament coordinador
+    }
+
     // Opcional: para otros roles o default, redirigir a home o logout
-    return redirect('/home');
+    return redirect('/');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
@@ -35,7 +39,7 @@ Route::get('/dashboard', function () {
 // El panel de Filament debe manejar /student con sus propios middleware.
 
 // Ruta principal del panel del tutor
-Route::view('tutor', 'tutor-dashboard')
+Route::view('tutor', 'tutor.schedules.index')
     ->middleware(['auth', 'verified', RedirectBasedOnRole::class])
     ->name('tutor');
 

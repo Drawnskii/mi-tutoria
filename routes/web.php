@@ -19,13 +19,17 @@ Route::get('/dashboard', function () {
     $role = $user->role->name;
 
     if ($role === 'student') {
-        return redirect('/student'); // Redirige al panel Filament para estudiantes
+        return redirect('/student'); // Panel Filament estudiantes
     }
 
-    return redirect()->route($role);
-})
-->middleware(['auth', 'verified'])
-->name('dashboard');
+    if ($role === 'coordinator') {
+        return redirect('/coordinator'); // Panel Filament coordinador
+    }
+
+    // Opcional: para otros roles o default, redirigir a home o logout
+    return redirect('/home');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 // Eliminada la ruta manual de 'student' que apuntaba a una vista.
 // El panel de Filament debe manejar /student con sus propios middleware.
@@ -50,9 +54,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-Route::view('coordinator', 'coordinator-dashboard')
-    ->middleware(['auth', 'verified', RedirectBasedOnRole::class])
-    ->name('coordinator');
+
     
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
